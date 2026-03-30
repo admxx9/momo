@@ -389,34 +389,18 @@
             line-height: 1.5;
         }
 
-        .letter-music-divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            border-top: 1px dashed #ffb3c1;
-            margin: 0 2rem;
-            padding: 0.6rem 0;
-            color: var(--primary-color);
-            font-size: 0.85rem;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            flex: 0 0 auto;
-        }
-
         .lyrics-section {
             flex: 1;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem 2rem 1.5rem;
+            padding: 1.5rem 2rem 0.5rem;
             overflow: hidden;
         }
 
         #current-lyric {
             font-family: 'Dancing Script', cursive;
-            font-size: 1.6rem;
+            font-size: 1.7rem;
             color: var(--primary-color);
             text-align: center;
             line-height: 1.5;
@@ -424,20 +408,21 @@
             min-height: 2.4rem;
         }
 
-        #music-progress {
-            width: 100%;
-            height: 3px;
-            background: #ffe0e8;
-            border-radius: 2px;
-            margin-top: 1.2rem;
-            overflow: hidden;
+        .song-title-label {
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #c9a0aa;
+            letter-spacing: 0.05em;
+            padding: 0.3rem 0 0.5rem;
+            flex: 0 0 auto;
         }
 
-        #music-progress-bar {
-            height: 100%;
-            width: 0%;
-            background: var(--primary-color);
-            transition: width 1s linear;
+        .letter-music-divider {
+            border-top: 1px dashed #ffb3c1;
+            margin: 0 2rem 0;
+            flex: 0 0 auto;
         }
 
         .close-btn {
@@ -539,18 +524,14 @@
     <div id="letter-view">
         <div class="love-letter">
             <button class="close-btn" onclick="closeLetter()">×</button>
+            <div class="lyrics-section">
+                <div id="current-lyric">♪</div>
+            </div>
+            <div class="song-title-label">keshi — UNDERSTAND</div>
+            <div class="letter-music-divider"></div>
             <div class="letter-top">
                 <h2 id="letter-title"></h2>
                 <div id="letter-body"></div>
-            </div>
-            <div class="letter-music-divider">
-                <span>🎵</span>
-                <span>keshi — UNDERSTAND</span>
-                <span>🎵</span>
-            </div>
-            <div class="lyrics-section">
-                <div id="current-lyric">♪</div>
-                <div id="music-progress"><div id="music-progress-bar"></div></div>
             </div>
             <audio id="bg-music" src="music.mp3" preload="auto"></audio>
         </div>
@@ -761,18 +742,21 @@
                 margin-bottom: 0.5rem;
             }
 
-            .letter-music-divider {
-                font-size: 0.75rem;
-                margin: 0 1rem;
-                padding: 0.4rem 0;
-            }
-
             .lyrics-section {
-                padding: 0.3rem 1rem 1rem;
+                padding: 1rem 1rem 0.3rem;
             }
 
             #current-lyric {
                 font-size: 1.2rem;
+            }
+
+            .song-title-label {
+                font-size: 0.7rem;
+                padding: 0.2rem 0 0.4rem;
+            }
+
+            .letter-music-divider {
+                margin: 0 1rem;
             }
 
             .shape:nth-child(1) {
@@ -990,10 +974,6 @@
                 }, 200);
             }
 
-            if (audio.duration) {
-                const pct = (t / audio.duration) * 100;
-                document.getElementById('music-progress-bar').style.width = pct + '%';
-            }
         }
 
         function openEnvelope() {
@@ -1018,7 +998,6 @@
             document.getElementById('letter-title').textContent = '';
             document.getElementById('letter-body').innerHTML = '';
             document.getElementById('current-lyric').textContent = '♪';
-            document.getElementById('music-progress-bar').style.width = '0%';
             currentLyricIndex = -1;
 
             const audio = document.getElementById('bg-music');
