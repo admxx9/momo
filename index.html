@@ -583,7 +583,107 @@
         /* Adjust game stage layout for grid */
         #game-stage {
             display: flex;
-            /* Ensure flex for centering */
+        }
+
+        /* Responsividade para mobile */
+        @media (max-width: 600px) {
+            .instructions {
+                padding: 1rem 1.2rem;
+                margin-bottom: 1rem;
+                max-width: 90vw;
+            }
+
+            .instructions h1 {
+                font-size: 1.8rem;
+            }
+
+            .instructions p {
+                font-size: 0.85rem;
+            }
+
+            .score-board {
+                font-size: 1rem;
+            }
+
+            .hiding-spots-container {
+                gap: 0.8rem;
+                max-width: 100vw;
+                padding: 10px;
+            }
+
+            .hiding-spot {
+                font-size: 2rem;
+            }
+
+            .envelope {
+                width: 200px;
+                height: 134px;
+            }
+
+            .flap {
+                border-left-width: 100px;
+                border-right-width: 100px;
+                border-top-width: 74px;
+            }
+
+            .pocket {
+                border-left-width: 100px;
+                border-right-width: 100px;
+                border-bottom-width: 134px;
+            }
+
+            .letter-preview {
+                width: 175px;
+                height: 120px;
+            }
+
+            .seal {
+                left: 80px;
+                top: 52px;
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+
+            .envelope-container.open .letter-preview {
+                transform: translateY(-70px);
+            }
+
+            .open-btn {
+                font-size: 1rem;
+                padding: 0.7rem 2rem;
+                margin-top: 2rem;
+            }
+
+            .love-letter {
+                padding: 1.5rem;
+                width: 95%;
+            }
+
+            .love-letter h2 {
+                font-size: 1.6rem;
+                margin-bottom: 1rem;
+            }
+
+            .love-letter p {
+                font-size: 1.1rem;
+                margin-bottom: 1rem;
+            }
+
+            .shape:nth-child(1) {
+                width: 80px;
+                height: 80px;
+            }
+
+            .shape:nth-child(2) {
+                width: 110px;
+                height: 110px;
+            }
+
+            .shape:nth-child(3) {
+                width: 60px;
+                height: 60px;
+            }
         }
     </style>
 
