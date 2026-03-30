@@ -351,9 +351,10 @@
             background: #fff;
             width: 90%;
             max-width: 600px;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 3rem;
+            height: min(85vh, 620px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             border-radius: 5px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             position: relative;
@@ -367,20 +368,76 @@
             transform: scale(1);
         }
 
+        .letter-top {
+            padding: 2rem 3rem 0.5rem;
+            flex: 0 0 auto;
+        }
+
         .love-letter h2 {
             font-family: 'Dancing Script', cursive;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--primary-color);
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
 
         .love-letter p {
             font-family: 'Dancing Script', cursive;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             color: #333;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
+            margin-bottom: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .letter-music-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border-top: 1px dashed #ffb3c1;
+            margin: 0 2rem;
+            padding: 0.6rem 0;
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            flex: 0 0 auto;
+        }
+
+        .lyrics-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 2rem 1.5rem;
+            overflow: hidden;
+        }
+
+        #current-lyric {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            text-align: center;
+            line-height: 1.5;
+            transition: opacity 0.4s ease;
+            min-height: 2.4rem;
+        }
+
+        #music-progress {
+            width: 100%;
+            height: 3px;
+            background: #ffe0e8;
+            border-radius: 2px;
+            margin-top: 1.2rem;
+            overflow: hidden;
+        }
+
+        #music-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary-color);
+            transition: width 1s linear;
         }
 
         .close-btn {
@@ -392,6 +449,7 @@
             color: #aaa;
             background: none;
             border: none;
+            z-index: 10;
         }
 
         .close-btn:hover {
@@ -434,23 +492,8 @@
             50%       { opacity: 0; }
         }
 
-        #letter-body p {
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.6rem;
-            color: #333;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-            min-height: 1.6em;
-        }
-
         #letter-body p.assinatura {
             text-align: right;
-        }
-
-        @media (max-width: 600px) {
-            #letter-body p {
-                font-size: 1.1rem;
-            }
         }
     </style>
 </head>
@@ -496,8 +539,20 @@
     <div id="letter-view">
         <div class="love-letter">
             <button class="close-btn" onclick="closeLetter()">×</button>
-            <h2 id="letter-title"></h2>
-            <div id="letter-body"></div>
+            <div class="letter-top">
+                <h2 id="letter-title"></h2>
+                <div id="letter-body"></div>
+            </div>
+            <div class="letter-music-divider">
+                <span>🎵</span>
+                <span>keshi — UNDERSTAND</span>
+                <span>🎵</span>
+            </div>
+            <div class="lyrics-section">
+                <div id="current-lyric">♪</div>
+                <div id="music-progress"><div id="music-progress-bar"></div></div>
+            </div>
+            <audio id="bg-music" src="music.mp3" preload="auto"></audio>
         </div>
     </div>
 
@@ -688,18 +743,36 @@
             }
 
             .love-letter {
-                padding: 1.5rem;
                 width: 95%;
+                height: min(88vh, 560px);
+            }
+
+            .letter-top {
+                padding: 1.2rem 1.5rem 0.3rem;
             }
 
             .love-letter h2 {
-                font-size: 1.6rem;
-                margin-bottom: 1rem;
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
             }
 
             .love-letter p {
-                font-size: 1.1rem;
-                margin-bottom: 1rem;
+                font-size: 1rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .letter-music-divider {
+                font-size: 0.75rem;
+                margin: 0 1rem;
+                padding: 0.4rem 0;
+            }
+
+            .lyrics-section {
+                padding: 0.3rem 1rem 1rem;
+            }
+
+            #current-lyric {
+                font-size: 1.2rem;
             }
 
             .shape:nth-child(1) {
@@ -865,6 +938,64 @@
             typeText(titleEl, 'Meu amor,', 70, () => typeNext(0));
         }
 
+        /* ── Letras sincronizadas com a música ── */
+        const lyrics = [
+            { time: 0,   text: '♪' },
+            { time: 8,   text: 'Nunca pensei que eu iria encontrar' },
+            { time: 14,  text: 'Que o amor da minha vida estaria tão perto' },
+            { time: 20,  text: 'E agora você está aqui' },
+            { time: 26,  text: 'Eu tenho você, você me tem' },
+            { time: 32,  text: 'Quando somos nós, você me faz sentir completo' },
+            { time: 38,  text: 'Você é tudo o que eu preciso' },
+            { time: 44,  text: 'Ooh, ooh...' },
+            { time: 50,  text: 'Talvez possamos tentar se você me deixar' },
+            { time: 57,  text: 'Segurar você pela mão' },
+            { time: 63,  text: 'Você é a única que entende' },
+            { time: 70,  text: 'Então eu acho que é hora' },
+            { time: 76,  text: 'De te pedir para ser minha por todos os meus dias' },
+            { time: 82,  text: 'Eu espero que você fique' },
+            { time: 88,  text: 'Eu vou admitir que estou com medo' },
+            { time: 94,  text: 'Porque eu nunca me importei tanto assim' },
+            { time: 100, text: 'Vale a pena o risco' },
+            { time: 106, text: 'Ooh, ooh...' },
+            { time: 112, text: 'Talvez possamos tentar se você me deixar' },
+            { time: 118, text: 'Segurar você pela mão' },
+            { time: 124, text: 'Você é a única que entende' },
+            { time: 130, text: 'Ooh, ooh, ooh...' },
+            { time: 136, text: 'Ooh, ooh...' },
+            { time: 141, text: 'Talvez possamos tentar se você me deixar' },
+            { time: 145, text: 'Segurar você pela mão' },
+            { time: 149, text: 'Você é a única que entende' },
+        ];
+
+        let currentLyricIndex = -1;
+
+        function updateLyrics() {
+            const audio = document.getElementById('bg-music');
+            const t = audio.currentTime;
+
+            let idx = -1;
+            for (let i = 0; i < lyrics.length; i++) {
+                if (t >= lyrics[i].time) idx = i;
+                else break;
+            }
+
+            if (idx !== currentLyricIndex) {
+                currentLyricIndex = idx;
+                const el = document.getElementById('current-lyric');
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.textContent = idx >= 0 ? lyrics[idx].text : '♪';
+                    el.style.opacity = '1';
+                }, 200);
+            }
+
+            if (audio.duration) {
+                const pct = (t / audio.duration) * 100;
+                document.getElementById('music-progress-bar').style.width = pct + '%';
+            }
+        }
+
         function openEnvelope() {
             const envContainer = document.getElementById('envelope');
             const letterView = document.getElementById('letter-view');
@@ -873,6 +1004,12 @@
                 letterView.classList.add('active');
                 createConfetti();
                 setTimeout(startLetterTyping, 400);
+
+                const audio = document.getElementById('bg-music');
+                audio.currentTime = 0;
+                currentLyricIndex = -1;
+                audio.play().catch(() => {});
+                audio.addEventListener('timeupdate', updateLyrics);
             }, 1500);
         }
 
@@ -880,6 +1017,14 @@
             document.getElementById('letter-view').classList.remove('active');
             document.getElementById('letter-title').textContent = '';
             document.getElementById('letter-body').innerHTML = '';
+            document.getElementById('current-lyric').textContent = '♪';
+            document.getElementById('music-progress-bar').style.width = '0%';
+            currentLyricIndex = -1;
+
+            const audio = document.getElementById('bg-music');
+            audio.pause();
+            audio.currentTime = 0;
+            audio.removeEventListener('timeupdate', updateLyrics);
         }
 
         function createConfetti() {
