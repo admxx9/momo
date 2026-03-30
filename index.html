@@ -351,6 +351,8 @@
             background: #fff;
             width: 90%;
             max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
             padding: 3rem;
             border-radius: 5px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -416,6 +418,40 @@
                 opacity: 0;
             }
         }
+
+        /* Cursor piscando do efeito de digitação */
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            background: #555;
+            margin-left: 2px;
+            animation: blink 0.7s step-end infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
+        }
+
+        #letter-body p {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.6rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            min-height: 1.6em;
+        }
+
+        #letter-body p.assinatura {
+            text-align: right;
+        }
+
+        @media (max-width: 600px) {
+            #letter-body p {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 
@@ -460,12 +496,8 @@
     <div id="letter-view">
         <div class="love-letter">
             <button class="close-btn" onclick="closeLetter()">×</button>
-            <h2>My Dearest Valentine,</h2>
-            <p>Just like you found these hidden hearts, you've found the deepest parts of my soul.</p>
-            <p>Every moment with you is a surprise I cherish, a gift I never want to stop opening.</p>
-            <p>Thank you for being my adventure, my comfort, and my love.</p>
-            <p>Happy Valentine's Day! ❤️</p>
-            <p style="text-align: right;">- Yours forever</p>
+            <h2 id="letter-title"></h2>
+            <div id="letter-body"></div>
         </div>
     </div>
 
@@ -781,6 +813,58 @@
             }, 1000);
         }
 
+        const letterContent = [
+            { tag: 'title', text: 'Meu amor,' },
+            { tag: 'p', text: 'Assim como você encontrou esses corações escondidos, você encontrou as partes mais profundas da minha alma.' },
+            { tag: 'p', text: 'Cada momento com você é uma surpresa que guardo com carinho, um presente que nunca quero parar de abrir.' },
+            { tag: 'p', text: 'Obrigada por ser minha aventura, meu conforto e meu amor.' },
+            { tag: 'p', text: 'Feliz Dia dos Namorados! ❤️' },
+            { tag: 'p', text: '- Seu para sempre', cls: 'assinatura' },
+        ];
+
+        function typeText(el, text, speed, callback) {
+            let i = 0;
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            cursor.style.height = '1.2em';
+            el.appendChild(cursor);
+
+            function type() {
+                if (i < text.length) {
+                    cursor.insertAdjacentText('beforebegin', text[i]);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    cursor.remove();
+                    if (callback) setTimeout(callback, 250);
+                }
+            }
+            type();
+        }
+
+        function startLetterTyping() {
+            const titleEl = document.getElementById('letter-title');
+            const bodyEl = document.getElementById('letter-body');
+            titleEl.textContent = '';
+            bodyEl.innerHTML = '';
+
+            const paragraphs = [];
+            letterContent.forEach(line => {
+                if (line.tag === 'title') return;
+                const p = document.createElement('p');
+                if (line.cls) p.className = line.cls;
+                bodyEl.appendChild(p);
+                paragraphs.push({ el: p, text: line.text });
+            });
+
+            function typeNext(idx) {
+                if (idx >= paragraphs.length) return;
+                typeText(paragraphs[idx].el, paragraphs[idx].text, 35, () => typeNext(idx + 1));
+            }
+
+            typeText(titleEl, 'Meu amor,', 70, () => typeNext(0));
+        }
+
         function openEnvelope() {
             const envContainer = document.getElementById('envelope');
             const letterView = document.getElementById('letter-view');
@@ -788,11 +872,14 @@
             setTimeout(() => {
                 letterView.classList.add('active');
                 createConfetti();
+                setTimeout(startLetterTyping, 400);
             }, 1500);
         }
 
         function closeLetter() {
             document.getElementById('letter-view').classList.remove('active');
+            document.getElementById('letter-title').textContent = '';
+            document.getElementById('letter-body').innerHTML = '';
         }
 
         function createConfetti() {
